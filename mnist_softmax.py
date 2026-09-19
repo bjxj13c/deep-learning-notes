@@ -71,7 +71,7 @@ print("更新后：",w[0][IDX].tolist())
 print("变化量：",(w[0][IDX]-w_before).tolist())
 print("校验-lr*梯度：",(-0.1*g).tolist())
 
-EPOCHS=5
+EPOCHS=10
 
 for epoch in range(EPOCHS):
     total_loss=0.0
@@ -93,6 +93,11 @@ for epoch in range(EPOCHS):
     print("第%d轮 损失%.4f  训练准确度%.4f"%(epoch+1,total_loss/len(train_loader),correct/total))
 
 
+# ★ 把最后一轮的训练准确率【存起来】。
+#   下面的测试循环会把 correct / total 重置并覆盖，不存就丢了。
+train_acc = correct / total
+
+
 test_set=MNIST(DATA_ROOT,train=False,transform=tf,download=False)
 test_loader=DataLoader(test_set,batch_size=1000,shuffle=False)
 
@@ -106,5 +111,5 @@ with torch.no_grad():
         total+=y.size(0)
 
 
-print("训练集准确率：%.2f%%"%(100*0.9175))
+print("训练集准确率：%.2f%%"%(100*train_acc))
 print("测试集准确率：%.2f%%"%(100*correct/total))
