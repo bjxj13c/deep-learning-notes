@@ -29,7 +29,9 @@ print("像素值范围：%.2f~%.2f"%(x.min(),x.max()))
 
 model=nn.Sequential(
     nn.Flatten(),#模型铺平：即把【1，25，28】变成1*28*28
-    nn.Linear(1*28*28,10),#矩阵乘法and加偏置
+    nn.Linear(1*28*28,128),#隐藏层
+    nn.ReLU(),#激活函数
+    nn.Linear(128,10),#矩阵乘法and加偏置
 )
 
 print(model)
@@ -93,7 +95,7 @@ for epoch in range(EPOCHS):
     print("第%d轮 损失%.4f  训练准确度%.4f"%(epoch+1,total_loss/len(train_loader),correct/total))
 
 
-# ★ 把最后一轮的训练准确率【存起来】。
+#   把最后一轮的训练准确率存起来。
 #   下面的测试循环会把 correct / total 重置并覆盖，不存就丢了。
 train_acc = correct / total
 
