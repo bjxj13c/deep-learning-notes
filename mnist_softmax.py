@@ -28,10 +28,18 @@ print("y的前10标签：",y[:10].tolist())
 print("像素值范围：%.2f~%.2f"%(x.min(),x.max()))
 
 model=nn.Sequential(
+    nn.Conv2d(1,6,kernel_size=5),
+    nn.ReLU(),
+    nn.MaxPool2d(2),
+
+    nn.Conv2d(6,16,kernel_size=5),
+    nn.ReLU(),
+    nn.MaxPool2d(2),
+
     nn.Flatten(),#模型铺平：即把【1，25，28】变成1*28*28
-    nn.Linear(1*28*28,128),#隐藏层
+    nn.Linear(16*4*4,120),#隐藏层
     nn.ReLU(),#激活函数
-    nn.Linear(128,10),#矩阵乘法and加偏置
+    nn.Linear(120,10),#矩阵乘法and加偏置
 )
 
 print(model)
@@ -53,8 +61,9 @@ print("损失：",loss.item())
 
 optimizer=torch.optim.SGD(model.parameters(),lr=0.1)
 
-w=model[1].weight
-IDX=[392,393,394,395,396]
+#验证梯度下降
+w=model[7].weight
+IDX=[0,1,2,3,4]
 w_before=w[0][IDX].clone()
 
 out=model(x)
@@ -115,3 +124,8 @@ with torch.no_grad():
 
 print("训练集准确率：%.2f%%"%(100*train_acc))
 print("测试集准确率：%.2f%%"%(100*correct/total))
+
+#保存模型
+
+torch.save(model.state_dict(),"mnist_cnn.pth")
+print("模型保存至mnist_cnn.pth")
