@@ -73,7 +73,7 @@ print("更新后：",w[0][IDX].tolist())
 print("变化量：",(w[0][IDX]-w_before).tolist())
 print("校验-lr*梯度：",(-0.1*g).tolist())
 
-EPOCHS=10
+EPOCHS=30#轮数
 
 for epoch in range(EPOCHS):
     total_loss=0.0
