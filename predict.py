@@ -17,26 +17,15 @@ import torch
 from torch import nn
 from PIL import Image
 from scipy import ndimage
+from model import MyCNN
 
 HERE=os.path.dirname(os.path.abspath(__file__))
 WEIGHTS=os.path.join(HERE,"mnist_cnn.pth")
 
 def build_model():
-    # ★ 必须和 mnist_softmax.py 里的 model 定义【一字不差】，
+    # ★ 必须和 mnist_softmax.py 里的 model 定义一字不差，
     #   否则 load_state_dict 会因为参数名对不上而报错。
-    #   （模型结构一改，这里就要同步改 —— 这就是"结构散在两个文件里"的痛点。）
-    return nn.Sequential(
-        nn.Conv2d(1, 6, kernel_size=5),
-        nn.ReLU(),
-        nn.MaxPool2d(2),
-        nn.Conv2d(6, 16, kernel_size=5),
-        nn.ReLU(),
-        nn.MaxPool2d(2),
-        nn.Flatten(),
-        nn.Linear(16 * 4 * 4, 120),
-        nn.ReLU(),
-        nn.Linear(120, 10),
-    )
+    return MyCNN()
 
 
 def load_model():

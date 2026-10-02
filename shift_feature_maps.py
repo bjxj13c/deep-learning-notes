@@ -33,7 +33,7 @@ def shift_image(a, dy, dx):
 
 
 # ---------- 1. 造出三张平移图（唯一变量：位置） ----------
-base = preprocess(os.path.join(DESKTOP, "7.png"))[0, 0].numpy()
+base = preprocess(os.path.join(HERE, "_debug", "7_28x28.png"))[0, 0].numpy()
 
 shifted = []
 print("=== 1. 三张平移图 ===")
@@ -50,7 +50,7 @@ print("=== 2. 第一层特征图 ===")
 for s, b in zip(SHIFTS, shifted):
     t = torch.tensor(b, dtype=torch.float32).view(1, 1, 28, 28)
     with torch.no_grad():
-        feats.append(model[:2](t)[0].numpy())
+        feats.append(model.features(t)[0].numpy())
         pred = int(torch.softmax(model(t), dim=1).argmax())
     print("  右移 %d 像素  ->  特征图 %s   整网预测 = %d" % (s, tuple(feats[-1].shape), pred))
 

@@ -16,9 +16,9 @@ HERE   = os.path.dirname(os.path.abspath(__file__))
 DESKTOP = os.path.abspath(os.path.join(HERE,"..",".."))
 
 IMAGES=[
-    ("Desktop 7.png", os.path.join(DESKTOP, "7.png")),
-    ("Desktop 7.1.png", os.path.join(DESKTOP, "7.1.png")),
-    ("MNIST real 7", os.path.join(HERE, "_debug", "mnist7.png")),
+    ("Handwritten 7-1", os.path.join(HERE, "_debug", "7_28x28.png")),
+    ("Handwritten 7-2", os.path.join(HERE, "_debug", "7.1_28x28.png")),
+    ("MNIST real 7",    os.path.join(HERE, "_debug", "mnist7.png")),
 ]
 
 model=build_model()
@@ -51,17 +51,16 @@ for name, path in IMAGES:
 
 print()
 print("模型结构：")
-for i,layer in enumerate(model):
-    print("model[%d]=%s"%(i,layer))
+for name,layer in model.named_children():
+    print(" %-6s %s"%(name,layer))
 
 feats=[]
 for (name, path), t in zip(IMAGES, tensors):
       with torch.no_grad():
-          f = model[:2](t)
+          f = model.features(t)
       feats.append(f)
       print("%-16s %s -> %s" % (name, tuple(t.shape), tuple(f.shape)))
 
-print("切片是复制还是共享？", model[:2][0] is model[0])
 
 fig,axes=plt.subplots(3,7,figsize=(14,6.5))
 

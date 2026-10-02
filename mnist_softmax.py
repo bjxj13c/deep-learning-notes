@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import MNIST
 
+from model import MyCNN
 
 #数据集位置
 DATA_ROOT="./data"
@@ -27,20 +28,7 @@ print("y的形状：",y.shape)
 print("y的前10标签：",y[:10].tolist())
 print("像素值范围：%.2f~%.2f"%(x.min(),x.max()))
 
-model=nn.Sequential(
-    nn.Conv2d(1,6,kernel_size=5),
-    nn.ReLU(),
-    nn.MaxPool2d(2),
-
-    nn.Conv2d(6,16,kernel_size=5),
-    nn.ReLU(),
-    nn.MaxPool2d(2),
-
-    nn.Flatten(),#模型铺平：即把【1，25，28】变成1*28*28
-    nn.Linear(16*4*4,120),#隐藏层
-    nn.ReLU(),#激活函数
-    nn.Linear(120,10),#矩阵乘法and加偏置
-)
+model=MyCNN()
 
 print(model)
 
@@ -62,7 +50,7 @@ print("损失：",loss.item())
 optimizer=torch.optim.SGD(model.parameters(),lr=0.1)
 
 #验证梯度下降
-w=model[7].weight
+w=model.fc1.weight
 IDX=[0,1,2,3,4]
 w_before=w[0][IDX].clone()
 

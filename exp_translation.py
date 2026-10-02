@@ -42,6 +42,8 @@ matplotlib.rcParams["font.sans-serif"] = ["SimHei", "Microsoft YaHei"]
 matplotlib.rcParams["axes.unicode_minus"] = False
 import matplotlib.pyplot as plt
 
+from model import MyCNN
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
 CNN_PATH = os.path.join(HERE, "mnist_cnn.pth")
@@ -65,18 +67,7 @@ def build_mlp():
 
 
 def build_cnn():
-    return nn.Sequential(
-        nn.Conv2d(1, 6, kernel_size=5),
-        nn.ReLU(),
-        nn.MaxPool2d(2),
-        nn.Conv2d(6, 16, kernel_size=5),
-        nn.ReLU(),
-        nn.MaxPool2d(2),
-        nn.Flatten(),
-        nn.Linear(16 * 4 * 4, 120),
-        nn.ReLU(),
-        nn.Linear(120, 10),
-    )
+    return MyCNN()
 
 
 def train(model, loader, tag):
