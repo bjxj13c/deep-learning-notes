@@ -30,6 +30,41 @@ print("像素值范围：%.2f~%.2f"%(x.min(),x.max()))
 
 model=MyCNN()
 
+def train_one_epoch(model,loader,loss_fn,optimizer):
+    """训练一轮返回平均损失和训练准确率"""
+    model.train()
+
+    total_loss=0.0
+    correct=0
+    total=0
+
+    for x,y in loader:
+        out=model(x)#前向传播
+        loss=loss_fn(out,y)#算损失
+
+        optimizer.zero_grad()#梯度清零
+        loss.backward()#反向传播
+        optimizer.step()#更新参数
+
+        total_loss+=loss.item()
+        correct+=(out.argmax(1)==y).sum().item()
+        total+=y.size(0)
+
+    return total_loss/len(loader),correct/total
+
+def evaluate(model,loader):
+    """给定的数据集上评估，返回准确率"""
+    model.eval()
+
+    total=0
+    correct=0
+    with torch.no_grad():#只进行推理，不记录梯度
+        for x,y in loader:
+            correct+=(model(x).argmax(1)==y).sum().item()
+            total+=y.size(0)
+
+    return correct/total
+
 print(model)
 
 n_param=sum(p.numel() for p in model.parameters())
@@ -73,45 +108,18 @@ print("校验-lr*梯度：",(-0.1*g).tolist())
 EPOCHS=30#轮数
 
 for epoch in range(EPOCHS):
-    total_loss=0.0
-    correct=0
-    total=0
-
-    for x,y in train_loader:
-        out=model(x)#向前传播
-        loss=loss_fn(out,y)#计算损失
-
-        optimizer.zero_grad()#梯度清零
-        loss.backward()#反向传播
-        optimizer.step()#更新参数
-
-        total_loss+=loss.item()
-        correct+=(out.argmax(1)==y).sum().item()
-        total+=y.size(0)
-
-    print("第%d轮 损失%.4f  训练准确度%.4f"%(epoch+1,total_loss/len(train_loader),correct/total))
-
-
-#   把最后一轮的训练准确率存起来。
-#   下面的测试循环会把 correct / total 重置并覆盖，不存就丢了。
-train_acc = correct / total
-
+    train_loss,train_acc=train_one_epoch(model,train_loader,loss_fn,optimizer)
+    print("第%d轮损失：%.4f 训练准确度：%.4f"%(epoch+1,train_loss,train_acc))
 
 test_set=MNIST(DATA_ROOT,train=False,transform=tf,download=False)
 test_loader=DataLoader(test_set,batch_size=1000,shuffle=False)
 
-model.eval()
-correct=0
-total=0
-with torch.no_grad():
-    for x,y in test_loader:
-        out=model(x)
-        correct+=(out.argmax(1)==y).sum().item()
-        total+=y.size(0)
+test_acc=evaluate(model,test_loader)
+
+print("训练集准确率：%.2f"%(100*train_acc))
+print("测试集准确率：%.2f"%(100*test_acc))
 
 
-print("训练集准确率：%.2f%%"%(100*train_acc))
-print("测试集准确率：%.2f%%"%(100*correct/total))
 
 #保存模型
 

@@ -7,12 +7,13 @@ from torch import nn
 class MyCNN(nn.Module):
     """手写数字分类的CNN"""
 
-    def __init__(self):
+    def __init__(self,dropout=0.0):
         super().__init__()
         self.conv1 = nn.Conv2d(1,6,kernel_size=5)
         self.conv2 = nn.Conv2d(6,16,kernel_size=5)
         self.fc1 = nn.Linear(16*4*4,120)
         self.fc2 = nn.Linear(120, 10)
+        self.drop = nn.Dropout(dropout)
 
     def features(self,x):
         """第一层卷积加relu"""
@@ -26,6 +27,7 @@ class MyCNN(nn.Module):
         x = F.max_pool2d(x,2)
         x=torch.flatten(x,1)#铺平
         x = F.relu(self.fc1(x))#全连接+relu
+        x = self.drop(x)
         x = self.fc2(x)
         return x
 if __name__ == "__main__":
